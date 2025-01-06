@@ -1,0 +1,35 @@
+Vagrant.configure("2") do |config|
+  # Define the first VM (primary - master)
+  config.vm.define "primary" do |primary|
+    primary.vm.box = "ubuntu/jammy64"  # Latest Ubuntu 22.04 LTS
+    primary.vm.network "private_network", type: "dhcp"  # Private network
+    primary.vm.hostname = "primary"
+    primary.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"  # 1 GB of RAM
+      vb.cpus = 1  # 1 CPU
+    end
+    primary.vm.provision "shell", inline: <<-SHELL
+      # Update system and install PostgreSQL
+      sudo apt update -y
+      sudo apt upgrade -y
+      sudo apt install -y postgresql postgresql-contrib
+    SHELL
+  end
+
+  # Define the second VM (replica - slave)
+  config.vm.define "replica" do |replica|
+    replica.vm.box = "ubuntu/jammy64"  # Latest Ubuntu 22.04 LTS
+    replica.vm.network "private_network", type: "dhcp"  # Private network
+    replica.vm.hostname = "replica"
+    replica.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+      vb.cpus = 1
+    end
+    replica.vm.provision "shell", inline: <<-SHELL
+      # Update system and install PostgreSQL
+      sudo apt update -y
+      sudo apt upgrade -y
+      sudo apt install -y postgresql postgresql-contrib
+    SHELL
+  end
+end
